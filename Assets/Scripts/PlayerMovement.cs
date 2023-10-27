@@ -40,7 +40,8 @@ public class PlayerMovement : MonoBehaviour
         return raycastHit.collider != null;
     }
 
-    public void ChangeGravity(){
+    public void ChangeGravity()
+    {
         gravity = -gravity;
         transform.localScale = new Vector3(transform.localScale.x, -transform.localScale.y, transform.localScale.z);
     }

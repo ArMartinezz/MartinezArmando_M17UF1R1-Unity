@@ -4,46 +4,61 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public Vector2 boxSize;
     public float gravity;
+    public bool gravityUp;
     public float speed;
     private float hInput;
+    public bool grounded;
+
     // Components
     public Rigidbody2D body;
     public Collider2D playerCollider;
     public LayerMask groundLayer;
+    private Animator animator;
 
     // Start is called before the first frame update
     void Start()
     {
         gravity = -9.8f;
         speed = 5f;
-        body = GetComponent<Rigidbody2D>();
-        playerCollider = GetComponent<Collider2D>();
+        animator = GetComponent<Animator>();
+    }
+
+
+    void Update(){
+        grounded = IsGrounded();
+
+        if (Input.GetKeyDown(KeyCode.V) && grounded)
+        {
+            ChangeGravity();
+        }
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {   
+
         // Movement
         hInput = Input.GetAxis("Horizontal");
 
-        body.velocity = new Vector2(hInput * speed, IsGrounded() ? 0.0f : gravity);
+        if (hInput != 0) {animator.SetBool("isWalking", true); } else {animator.SetBool("isWalking", false); }
 
-        if (Input.GetKeyDown(KeyCode.V) && IsGrounded()){ ChangeGravity(); }
+        body.velocity = new Vector2(hInput * speed, grounded ? 0.0f : gravity);
     }
 
     private bool IsGrounded() 
     {
-        RaycastHit2D raycastHit = Physics2D.BoxCast(playerCollider.bounds.center, new Vector3(playerCollider.bounds.size.x, playerCollider.bounds.size.y, playerCollider.bounds.size.z), 0f, Vector2.up, 0.01f, groundLayer);
-        print(raycastHit.collider != null ? raycastHit.collider : "") ;
+        RaycastHit2D raycastHit = Physics2D.BoxCast(playerCollider.bounds.center, playerCollider.bounds.size, 0f, gravityUp ? Vector2.down : Vector2.up, 0.1f, groundLayer);
         return raycastHit.collider != null;
     }
 
     public void ChangeGravity()
     {
         gravity = -gravity;
-        transform.localScale = new Vector3(transform.localScale.x, -transform.localScale.y, transform.localScale.z);
+        Vector2 Scaler = transform.localScale;
+        Scaler.y *= -1;
+        transform.localScale = Scaler;
+        gravityUp = !gravityUp;
     }
 
 }

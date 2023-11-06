@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8609988901179479359}
   - component: {fileID: 878443899365529785}
   - component: {fileID: 1278447741259196503}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Hazards
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2664,6 +2664,7 @@ MonoBehaviour:
   gravityUp: 1
   speed: 0
   grounded: 0
+  spawnPoint: {x: 0, y: 0}
   body: {fileID: 527210764230379014}
   playerCollider: {fileID: 1538810764275418359}
   groundLayer:

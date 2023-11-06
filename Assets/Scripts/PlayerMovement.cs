@@ -9,6 +9,10 @@ public class PlayerMovement : MonoBehaviour
     public float speed;
     private float hInput;
     public bool grounded;
+    private bool dead;
+    private bool facingRight;
+    private float dyingGravity;
+    public Vector2 spawnPoint;
 
     // Components
     public Rigidbody2D body;
@@ -21,7 +25,10 @@ public class PlayerMovement : MonoBehaviour
     {
         gravity = -9.8f;
         speed = 5f;
+        dead = false;
         animator = GetComponent<Animator>();
+        dyingGravity = 2.0f;
+        spawnPoint = transform.position;
     }
 
 
@@ -43,7 +50,22 @@ public class PlayerMovement : MonoBehaviour
 
         if (hInput != 0) {animator.SetBool("isWalking", true); } else {animator.SetBool("isWalking", false); }
 
-        body.velocity = new Vector2(hInput * speed, grounded ? 0.0f : gravity);
+        if (hInput > 0 && facingRight || hInput < 0 && !facingRight) 
+        {
+            Vector2 Scaler = transform.localScale;
+            Scaler.x *= -1;
+            transform.localScale = Scaler;
+            facingRight = !facingRight;
+        }
+
+        if (!dead){
+            body.velocity = new Vector2(hInput * speed, grounded ? 0.0f : gravity);
+        } else {
+            body.velocity = new Vector2(2.0f, dyingGravity);
+            if (dyingGravity > -9.8f) { dyingGravity -= 0.2f; }
+        }
+
+        if (transform.position.y < -5.5f) { Respawn(); }
     }
 
     private bool IsGrounded() 
@@ -61,4 +83,31 @@ public class PlayerMovement : MonoBehaviour
         gravityUp = !gravityUp;
     }
 
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        if (other.gameObject.CompareTag("Hazard"))
+        {
+            Die();
+        }    
+    }
+
+    public void Die()
+    {
+        dead = true;
+        if (gravity > 0.0f)
+        {
+            Vector2 Scaler = transform.localScale;
+            Scaler.y *= -1;
+            transform.localScale = Scaler;
+            gravityUp = !gravityUp;
+            gravity *= -1;
+        }
+    }
+
+    public void Respawn()
+    {
+        dead = false;
+        transform.position = spawnPoint;
+        dyingGravity = 2.0f;
+    }
 }

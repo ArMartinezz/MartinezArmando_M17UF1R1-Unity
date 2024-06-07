@@ -19,16 +19,17 @@ public class PlayerMovement : MonoBehaviour
     public Collider2D playerCollider;
     public LayerMask groundLayer;
     private Animator animator;
+    private SoundManager soundManager;
 
     // Start is called before the first frame update
     void Start()
     {
         gravity = -9.8f;
-        speed = 5f;
         dead = false;
         animator = GetComponent<Animator>();
         dyingGravity = 2.0f;
         spawnPoint = transform.position;
+        soundManager = GameObject.FindGameObjectWithTag("Sound").GetComponent<SoundManager>();
     }
 
 
@@ -76,6 +77,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void ChangeGravity()
     {
+        soundManager.PlaySFX("Bwomp");
         gravity = -gravity;
         Vector2 Scaler = transform.localScale;
         Scaler.y *= -1;
@@ -83,17 +85,11 @@ public class PlayerMovement : MonoBehaviour
         gravityUp = !gravityUp;
     }
 
-    private void OnCollisionEnter2D(Collision2D other)
-    {
-        if (other.gameObject.CompareTag("Hazard"))
-        {
-            Die();
-        }    
-    }
-
     public void Die()
     {
+        soundManager.PlaySFX("Dolor");
         dead = true;
+        playerCollider.enabled = false;
         if (gravity > 0.0f)
         {
             Vector2 Scaler = transform.localScale;
@@ -107,7 +103,13 @@ public class PlayerMovement : MonoBehaviour
     public void Respawn()
     {
         dead = false;
+        playerCollider.enabled = true;
         transform.position = spawnPoint;
         dyingGravity = 2.0f;
+    }
+
+    public void ResetSpawnpoint()
+    {
+        spawnPoint = (Vector2)transform.position;
     }
 }

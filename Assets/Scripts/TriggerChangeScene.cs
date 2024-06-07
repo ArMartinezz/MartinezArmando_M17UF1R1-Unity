@@ -2,11 +2,28 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public class SceneLoadParams
+{
+    public string sceneName;
+    public enum Direction { VerticalTop, VerticalBottom, LeftHorizontal, RightHorizontal, };
+    public Direction direction;
+    public enum Type { A, B, };
+    public Type type;
+
+    public SceneLoadParams(string name, Direction direction, Type type) 
+    {
+        this.sceneName = name;
+        this.direction = direction;
+        this.type = type;
+    }
+}
+
 public class TriggerChangeScene : MonoBehaviour
 {
-    public int nextScene;
-    public string axis;
+    public string nextScene;
+    public SceneLoadParams.Direction direction;
     private GameManager gameManager;
+    public GameObject parent;
 
     // Start is called before the first frame update
     void Start()
@@ -18,10 +35,10 @@ public class TriggerChangeScene : MonoBehaviour
     }
 
     private void OnTriggerEnter2D(Collider2D other) {
-        Debug.Log(other.gameObject.tag);
         if (other.gameObject.tag == "Player")
         {
-            gameManager.ChangeScene(nextScene, axis, 0f, false);
+            SceneLoadParams newScene = new SceneLoadParams(nextScene, direction, parent.tag == "ExitA" ? SceneLoadParams.Type.A : SceneLoadParams.Type.B );
+            gameManager.ChangeScene(newScene);
         }
 
     }

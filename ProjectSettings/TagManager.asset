@@ -6,6 +6,9 @@ TagManager:
   tags:
   - Ground
   - Hazard
+  - ExitA
+  - ExitB
+  - Sound
   layers:
   - Default
   - TransparentFX
